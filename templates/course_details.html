@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ course.name }} — Course Details{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 950px; margin: 0 auto;">
+    <!-- Course Header Card -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(17,24,39,1) 0%, rgba(31,41,61,0.6) 100%); border-color: var(--border-accent);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span class="course-category">{{ course.category }}</span>
+                    <span style="font-size: 0.8rem; color: var(--text-dim); font-family: monospace;">{{ course.course_code }}</span>
+                </div>
+
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: #fff;">{{ course.name }}</h2>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 0.5rem; max-width: 700px;">
+                    {{ course.description }}
+                </p>
+            </div>
+
+            {% if rec %}
+            <div style="text-align: right; background: rgba(99,102,241,0.12); padding: 1rem 1.25rem; border-radius: 12px; border: 1px solid var(--border-accent);">
+                <div style="font-size: 2rem; font-weight: 800; color: #10b981;">{{ rec.match_score }}%</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim);">Recommendation Score</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; gap: 2rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); font-size: 0.88rem; color: var(--text-muted);">
+            <div><strong>Duration:</strong> {{ course.duration_weeks }} Weeks</div>
+            <div><strong>Estimated Hours:</strong> {{ course.estimated_hours }} Hours</div>
+            <div><strong>Difficulty Level:</strong> {{ course.difficulty }}</div>
+            <div>
+                <strong>Status:</strong> 
+                {% if enrollment %}
+                    <span class="badge {% if enrollment.status == 'completed' %}badge-completed{% else %}badge-in-progress{% endif %}">
+                        {{ enrollment.status.replace('_', ' ').title() }} ({{ enrollment.progress_pct }}%)
+                    </span>
+                {% else %}
+                    <span class="badge badge-upcoming">Not Enrolled</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.75rem;">
+        <div>
+            <!-- Skills Gained Card -->
+            <div class="card">
+                <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">⚡ Skills Gained in This Course</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    {% for sk in skills %}
+                        <span class="skill-pill" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; background: rgba(99,102,241,0.15); color: #a5b4fc; border-color: rgba(99,102,241,0.3);">
+                            ✓ {{ sk.name }} ({{ sk.category }})
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Prerequisites Card -->
+            <div class="card">
+                <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">🔗 Course Prerequisites</h3>
+                {% if prerequisites %}
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        {% for p in prerequisites %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div>
+                                <strong style="color: #fff; font-size: 0.9rem;">{{ p.name }}</strong>
+                                <span style="font-size: 0.75rem; color: var(--text-dim); display: block;">{{ p.course_code }} • {{ p.difficulty }}</span>
+                            </div>
+                            <a href="{{ url_for('course_details', course_id=p.id) }}" class="btn btn-secondary btn-sm">View Prerequisites</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">No prior prerequisites required for this course — suitable for immediate enrollment.</p>
+                {% endif %}
+
+                {% if missing_prereqs %}
+                <div style="margin-top: 1rem; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 0.85rem; font-size: 0.84rem; color: #fbbf24;">
+                    ⚠️ <strong>Prerequisite Recommended First:</strong> We suggest completing <strong>{{ missing_prereqs[0].name }}</strong> before starting this course.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Enroll & Progress Controls -->
+        <div>
+            <div class="card">
+                <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 1rem;">🚀 Academic Action</h3>
+
+                {% if enrollment and enrollment.status == 'completed' %}
+                    <div style="text-align: center; padding: 1.5rem; background: rgba(16,185,129,0.1); border-radius: 12px; border: 1px solid rgba(16,185,129,0.3); margin-bottom: 1rem;">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎉</div>
+                        <h4 style="font-size: 1.05rem; font-weight: 700; color: #34d399;">Course Completed!</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Skills credited to your profile.</p>
+                    </div>
+                {% else %}
+                    <form action="{{ url_for('update_course_status') }}" method="POST">
+                        <input type="hidden" name="course_id" value="{{ course.id }}">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Set Progress Status</label>
+                            <select name="status" class="form-select">
+                                <option value="in_progress" {% if enrollment and enrollment.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                <option value="completed">Completed (100%)</option>
+                                <option value="saved" {% if enrollment and enrollment.status == 'saved' %}selected{% endif %}>Saved / Bookmarked</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Progress Percentage (%)</label>
+                            <input type="number" name="progress_pct" class="form-control" min="0" max="100" value="{{ enrollment.progress_pct if enrollment else 25 }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Update Course Status</button>
+                    </form>
+                {% endif %}
+
+                <a href="{{ url_for('courses') }}" class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem; text-align: center;">Back to Catalog</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

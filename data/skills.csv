@@ -1,0 +1,53 @@
+id,name,category
+1,Excel,Data Analytics
+2,SQL,Databases
+3,Python,Programming
+4,Java,Programming
+5,JavaScript,Web Development
+6,HTML,Web Development
+7,CSS,Web Development
+8,React,Web Development
+9,Node.js,Web Development
+10,Statistics,Mathematics
+11,Power BI,Data Analytics
+12,Tableau,Data Analytics
+13,Pandas,Data Science
+14,NumPy,Data Science
+15,Machine Learning,Artificial Intelligence
+16,Deep Learning,Artificial Intelligence
+17,Git,DevOps & Tools
+18,Linux,Operating Systems
+19,AWS,Cloud Computing
+20,Docker,DevOps & Tools
+21,Kubernetes,DevOps & Tools
+22,Communication,Soft Skills
+23,Business Analysis,Management
+24,Data Visualization,Data Analytics
+25,Database Management,Databases
+26,Computer Networks,Cybersecurity & IT
+27,Cybersecurity Fundamentals,Cybersecurity & IT
+28,Security Engineering,Cybersecurity & IT
+29,UI/UX Design,Design
+30,Figma,Design
+31,User Research,Design
+32,Data Structures,Computer Science
+33,FastAPI,Web Development
+34,MLOps,DevOps & Tools
+35,System Design,Software Architecture
+36,Reinforcement Learning,Artificial Intelligence
+37,R Programming,Data Science
+38,Spark,Big Data
+39,Hadoop,Big Data
+40,Kafka,Big Data
+41,Microservices,Software Architecture
+42,Data Governance,Management
+43,Agile Methodology,Management
+44,Next.js,Web Development
+45,TypeScript,Web Development
+46,PostgreSQL,Databases
+47,MongoDB,Databases
+48,Prompt Engineering,Artificial Intelligence
+49,Product Management,Management
+50,Data Engineering,Data Engineering
+51,NLP,Artificial Intelligence
+52,Computer Vision,Artificial Intelligence

@@ -1,0 +1,53 @@
+id,course_code,name,category,description,difficulty,duration_weeks,estimated_hours
+1,CS101,Python Fundamentals,Computer Science,"Learn the essential syntax, control flows, data types, and functions in Python.",Beginner,4,20
+2,CS102,Advanced Python Programming,Computer Science,"Master OOP, decorators, generators, multi-threading, and advanced modules in Python.",Intermediate,6,30
+3,DB101,SQL Fundamentals,Databases,"Master relational queries, SELECT, JOIN, GROUP BY, and basic database normalization.",Beginner,4,20
+4,DB102,Advanced SQL & Query Optimization,Databases,"Learn window functions, CTEs, indexing, query execution plans, and stored procedures.",Intermediate,6,30
+5,DA101,Excel for Data Analysis & BI,Data Analytics,"Use VLOOKUP, INDEX-MATCH, Pivot Tables, and financial formulas for business intelligence.",Beginner,3,15
+6,MATH101,Applied Statistics & Probability,Mathematics,"Understand mean, variance, hypothesis testing, p-values, regression, and distributions.",Beginner,5,25
+7,BI101,Power BI Dashboard Mastery,Data Analytics,"Connect datasets, model DAX relationships, and build interactive executive dashboards in Power BI.",Intermediate,4,20
+8,BI102,Tableau Essentials for Visual Storytelling,Data Analytics,Transform raw data into captivating interactive charts and dashboards using Tableau.,Intermediate,4,20
+9,DA102,Data Visualization with Python,Data Analytics,"Create charts with Matplotlib, Seaborn, and Plotly to convey statistical insights.",Intermediate,4,20
+10,DA103,Data Analysis with Pandas & NumPy,Data Analytics,"Perform data cleaning, reshaping, indexing, aggregations, and numerical calculations.",Intermediate,5,25
+11,ML101,Introduction to Machine Learning,Artificial Intelligence,"Supervised and unsupervised algorithms: Linear Regression, Decision Trees, K-Means, and SVM.",Intermediate,8,40
+12,ML102,Applied Deep Learning & Neural Networks,Artificial Intelligence,"Build CNNs, RNNs, and Transformers using PyTorch/TensorFlow for deep learning tasks.",Advanced,8,45
+13,DB103,Database Management Systems (DBMS),Databases,"ACID properties, relational algebra, concurrency control, and database architecture.",Intermediate,6,30
+14,WEB101,HTML5 & CSS3 Web Fundamentals,Web Development,Build semantic HTML documents and responsive layouts with modern CSS Flexbox and Grid.,Beginner,3,15
+15,WEB102,Modern JavaScript Essentials,Web Development,"ES6+ syntax, async programming, DOM manipulation, promises, and fetch API.",Beginner,5,25
+16,WEB103,React.js Frontend Framework,Web Development,"Component architecture, hooks, state management, router, and virtual DOM concepts.",Intermediate,6,30
+17,WEB104,Node.js & Express Backend Architecture,Web Development,"Build RESTful APIs, event loop, middleware, JWT auth, and database integration.",Intermediate,6,30
+18,DEV101,Git & GitHub Version Control,DevOps,"Version management, branching, merging, pull requests, and collaborative Git workflows.",Beginner,2,10
+19,CLOUD101,Cloud Computing Fundamentals,Cloud Computing,"Understand cloud service models (IaaS, PaaS, SaaS), virtualization, and cloud providers.",Beginner,4,20
+20,CLOUD102,AWS Solutions Architecture,Cloud Computing,"Architect resilient cloud architectures using EC2, S3, RDS, IAM, VPC, and Lambda.",Intermediate,6,35
+21,SYS101,Linux System Administration & Bash,Operating Systems,"CLI mastery, file permissions, process management, shell scripting, and environment config.",Beginner,4,20
+22,NET101,Computer Networks & Internet Protocols,Network & IT,"TCP/IP stack, OSI model, routing, DNS, HTTP/S, and network diagnostics.",Intermediate,6,30
+23,SEC101,Cybersecurity Fundamentals & Defense,Cybersecurity,"Core security concepts: CIA triad, cryptography, firewall design, and threat mitigation.",Beginner,5,25
+24,UI101,UI/UX Design Principles & Wireframing,Design,"User-centered design, wireframing, color theory, typography, and usability testing.",Beginner,4,20
+25,UI102,Figma Masterclass for UI Designers,Design,"Master Figma components, auto-layout, interactive prototypes, and design systems.",Beginner,3,15
+26,BI103,Business Analytics & Problem Solving,Business,"Deconstruct business challenges, define KPIs, perform root cause analysis, and report metrics.",Intermediate,5,25
+27,CS103,Data Structures & Algorithms in Java,Computer Science,"Arrays, Linked Lists, Trees, Graphs, Sorting algorithms, and Time/Space complexity.",Intermediate,8,40
+28,DEV102,Docker & Containerization Essentials,DevOps,"Create Dockerfiles, containerize applications, manage volumes, network bridge, and Compose.",Intermediate,4,20
+29,DEV103,Kubernetes Orchestration for Engineers,DevOps,"Deploy scalable microservices using K8s Pods, Deployments, Services, and Ingress.",Advanced,6,30
+30,WEB105,API Development with FastAPI & Python,Web Development,"Build lightning-fast async RESTful APIs with auto Swagger docs, Pydantic, and SQLAlchemy.",Intermediate,4,20
+31,WEB106,Full-Stack Web Development with Django,Web Development,"Build secure full-stack web applications with Django ORM, authentication, and templates.",Intermediate,7,35
+32,ML103,Natural Language Processing (NLP) with Python,Artificial Intelligence,"Tokenization, TF-IDF, Word Embeddings, Sentiment Analysis, and Transformers with HuggingFace.",Advanced,6,30
+33,ML104,Computer Vision & OpenCV Essentials,Artificial Intelligence,"Image processing, object detection, segmentation, and CNN architectures using OpenCV and PyTorch.",Advanced,6,30
+34,ML105,MLOps: Machine Learning Model Deployment,DevOps,"Model registry, automated CI/CD pipelines, Docker deployment, and drift monitoring.",Advanced,6,35
+35,CS104,System Design & Distributed Architecture,Software Engineering,"Load balancers, caching strategies, horizontal scaling, database sharding, and message queues.",Advanced,8,40
+36,ML106,Reinforcement Learning Foundations,Artificial Intelligence,"Markov Decision Processes, Q-Learning, Deep Q-Networks (DQN), and Policy Gradients.",Advanced,6,30
+37,DA104,R Programming for Statistical Computing,Data Analytics,"Data manipulation with dplyr, ggplot2 graphics, and statistical model fitting in R.",Intermediate,5,25
+38,DE101,Apache Spark for Big Data Analytics,Big Data,"Distributed dataframes, Spark SQL, PySpark processing, and streaming pipelines.",Advanced,6,30
+39,DE102,Big Data Infrastructure with Hadoop & Hive,Big Data,"HDFS architecture, MapReduce paradigms, data warehousing with Apache Hive.",Advanced,7,35
+40,DE103,Event-Driven Streaming with Apache Kafka,Big Data,"Producers, consumers, Kafka brokers, event streaming, and real-time data integration.",Advanced,5,25
+41,CS105,Microservices Architecture & Design Patterns,Software Engineering,"Service discovery, API gateway pattern, event-driven decoupling, and fault tolerance.",Advanced,6,30
+42,SEC102,Ethical Hacking & Penetration Testing,Cybersecurity,"Vulnerability assessment, network sniffing, exploit frameworks, and security auditing.",Intermediate,7,35
+43,SEC103,Cloud Security Architecture & Compliance,Cybersecurity,"IAM policy hardening, VPC isolation, zero-trust models, and cloud compliance auditing.",Advanced,6,30
+44,DA105,"Data Governance, Ethics & Quality Control",Data Analytics,"Data lineage, privacy regulations (GDPR/HIPAA), data cataloging, and quality frameworks.",Intermediate,4,20
+45,MGMT101,Agile & Scrum Methodologies for Teams,Management,"Scrum ceremonies, user stories, backlog grooming, sprint velocity, and Kanban.",Beginner,3,15
+46,WEB107,Next.js Framework & Server-Side Rendering,Web Development,"App Router, SSR, SSG, API routes, and full-stack React performance optimization.",Intermediate,5,25
+47,WEB108,TypeScript Essentials for Enterprise Apps,Web Development,"Static typing, interfaces, generics, type guards, and TypeScript integration in React/Node.",Intermediate,4,20
+48,DB104,PostgreSQL Query Tuning & Optimization,Databases,"EXPLAIN ANALYZE, custom indexing, table partitioning, and high-performance tuning.",Advanced,5,25
+49,DB105,NoSQL Databases with MongoDB,Databases,"Document stores, BSON schemas, aggregation framework, and replication sets.",Intermediate,4,20
+50,ML107,Generative AI & Prompt Engineering,Artificial Intelligence,"LLM architectures, prompt design techniques, RAG pipelines, and API integrations.",Intermediate,4,20
+51,MGMT102,Product Management Essentials for Tech,Management,"Product strategy, roadmapping, feature prioritization, customer feedback loops, and analytics.",Intermediate,5,25
+52,DE104,Data Engineering Pipelines with Apache Airflow,Data Analytics,"DAG workflow orchestration, task dependencies, custom operators, and data ETL pipelines.",Advanced,6,30

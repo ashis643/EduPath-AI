@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block page_title %}Personalized Course Recommendations{% endblock %}
+
+{% block content %}
+
+<!-- Header & Filter Bar -->
+<div class="card" style="padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Engineered Recommendations for {{ gap_data.target_career_title }}</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Scored based on 40% Skill Gap + 30% Career Relevance + 15% Interest + 10% Difficulty + 5% Prerequisites</p>
+        </div>
+
+        <form action="{{ url_for('recommendations') }}" method="GET" style="display: flex; gap: 0.75rem;">
+            <select name="category" class="form-select" style="padding: 0.4rem 0.8rem; font-size: 0.82rem;" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="difficulty" class="form-select" style="padding: 0.4rem 0.8rem; font-size: 0.82rem;" onchange="this.form.submit()">
+                <option value="">All Difficulties</option>
+                <option value="Beginner" {% if difficulty_filter == 'Beginner' %}selected{% endif %}>Beginner</option>
+                <option value="Intermediate" {% if difficulty_filter == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                <option value="Advanced" {% if difficulty_filter == 'Advanced' %}selected{% endif %}>Advanced</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+<!-- Recommendations Grid -->
+<div class="course-grid">
+    {% for rec in recommendations %}
+    <div class="course-card">
+        <div>
+            <div class="course-card-top">
+                <span class="course-category">{{ rec.category }}</span>
+                <span class="match-score-badge">{{ rec.match_score }}% Match</span>
+            </div>
+
+            <h4 class="course-title">{{ rec.name }}</h4>
+            <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem;">Code: {{ rec.course_code }} • {{ rec.difficulty }} • {{ rec.duration_weeks }} Wks</p>
+            <p class="course-desc">{{ rec.description }}</p>
+
+            <div class="skills-pill-container">
+                {% for sk in rec.skills %}
+                    <span class="skill-pill">{{ sk }}</span>
+                {% endfor %}
+            </div>
+
+            {% if not rec.prereq_satisfied %}
+            <div style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: 6px; padding: 0.4rem 0.6rem; font-size: 0.75rem; color: #fbbf24; margin-bottom: 0.85rem;">
+                ⚠️ <strong>Prerequisite Required:</strong> {{ rec.missing_prereqs[0].name if rec.missing_prereqs else 'Prior Course' }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <button onclick='openExplanationModal("{{ rec.name|escape }}", {{ rec.match_score }}, {{ rec.breakdown|tojson|safe }})' class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 0.5rem;">
+                💡 Why is this recommended?
+            </button>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <a href="{{ url_for('course_details', course_id=rec.course_id) }}" class="btn btn-primary btn-sm" style="flex: 1;">View Details</a>
+                <button onclick="updateCourseStatus({{ rec.course_id }}, 'in_progress', 10)" class="btn btn-secondary btn-sm">Start</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Recommendation Breakdown Modal -->
+<div id="recommendationModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 550px; margin: 1rem; border-color: var(--border-accent); box-shadow: var(--glow-shadow);">
+        <div class="card-header">
+            <div>
+                <h3 id="modalCourseTitle" class="card-title" style="font-size: 1.2rem;">Course Title</h3>
+                <span id="modalMatchScore" class="match-score-badge" style="margin-top: 0.35rem; display: inline-block;">95% Match</span>
+            </div>
+            <button onclick="closeExplanationModal()" style="background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 0.75rem;">Why This Course? (Explainability Engine)</h4>
+        <ul id="modalReasonsList" style="list-style: none; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            <!-- Populated via JS -->
+        </ul>
+
+        <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.75rem;">Scoring Formula Components</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.78rem; color: var(--text-muted);">
+            <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;"><span>Skill Gap Match (40%)</span></div>
+                <div class="progress-bar-container"><div id="barSkillGap" class="progress-bar-fill" style="width: 0%;"></div></div>
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;"><span>Career Relevance (30%)</span></div>
+                <div class="progress-bar-container"><div id="barCareerRel" class="progress-bar-fill success" style="width: 0%;"></div></div>
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;"><span>Interest Match (15%)</span></div>
+                <div class="progress-bar-container"><div id="barInterest" class="progress-bar-fill" style="width: 0%;"></div></div>
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;"><span>Difficulty Fit (10%)</span></div>
+                <div class="progress-bar-container"><div id="barDifficulty" class="progress-bar-fill warning" style="width: 0%;"></div></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+            <button onclick="closeExplanationModal()" class="btn btn-secondary btn-sm">Close</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
+{% endblock %}

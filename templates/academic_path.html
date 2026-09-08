@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block page_title %}Personalized Academic Learning Roadmap{% endblock %}
+
+{% block content %}
+
+<!-- Header Banner -->
+<div class="card" style="background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(17,24,39,1) 100%); border-color: var(--border-accent);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <span class="badge badge-next" style="margin-bottom: 0.5rem;">Target Role: {{ path_data.target_career_title }}</span>
+            <h2 style="font-size: 1.4rem; font-weight: 800;">Step-by-Step Prerequisites Learning Roadmap</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Dynamically ordered based on course dependencies, your current skill profile, and career goals.
+            </p>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 2rem; font-weight: 800; color: #10b981;">{{ path_data.career_readiness_pct }}%</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Career Readiness</div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Roadmap Flowchart Timeline -->
+<div class="card">
+    <div class="path-timeline">
+        {% for node in path_data.nodes %}
+        <div class="timeline-step {{ node.step_status }}">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                <div style="flex: 1; min-width: 250px;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+                        <span class="badge {{ node.badge_class }}">{{ node.status_label }}</span>
+                        <span style="font-size: 0.78rem; color: var(--text-dim);">Step {{ node.step_number }} of {{ path_data.total_steps }}</span>
+                    </div>
+
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;">{{ node.name }} <span style="font-size: 0.85rem; color: var(--primary);">({{ node.code }})</span></h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0;">{{ node.description }}</p>
+
+                    <div style="display: flex; gap: 1rem; font-size: 0.78rem; color: var(--text-dim); margin-top: 0.5rem;">
+                        <span>⏱️ {{ node.duration }} Weeks</span>
+                        <span>⌛ {{ node.hours }} Hours</span>
+                        <span>📊 Level: {{ node.difficulty }}</span>
+                    </div>
+
+                    <div style="margin-top: 0.75rem;">
+                        <span style="font-size: 0.75rem; color: var(--text-dim); display: block; margin-bottom: 0.25rem;">Skills Developed:</span>
+                        <div class="skills-pill-container">
+                            {% for sk in node.skills %}
+                                <span class="skill-pill">{{ sk }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if node.prerequisites %}
+                    <div style="margin-top: 0.5rem; font-size: 0.78rem; color: #fbbf24;">
+                        🔗 <strong>Prerequisites:</strong> {{ node.prerequisites | join(', ') }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Controls -->
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 140px;">
+                    <a href="{{ url_for('course_details', course_id=node.course_id) }}" class="btn btn-secondary btn-sm">Course Details</a>
+                    
+                    {% if node.step_status == 'completed' %}
+                        <button class="btn btn-secondary btn-sm" disabled style="opacity: 0.7; color: #34d399;">✓ Completed</button>
+                    {% elif node.step_status == 'in_progress' %}
+                        <button onclick="updateCourseStatus({{ node.course_id }}, 'completed')" class="btn btn-primary btn-sm">Mark Completed</button>
+                    {% else %}
+                        <button onclick="updateCourseStatus({{ node.course_id }}, 'in_progress', 10)" class="btn btn-primary btn-sm">Start Step</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Final Milestone Node -->
+        <div class="timeline-step" style="border: 2px dashed var(--primary); background: rgba(99,102,241,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <span class="badge badge-next" style="background: var(--primary-gradient);">🏆 Final Graduation Milestone</span>
+                    <h3 style="font-size: 1.25rem; font-weight: 800; margin-top: 0.5rem;">{{ path_data.capstone.title }}</h3>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.35rem;">
+                        {{ path_data.capstone.description }}
+                    </p>
+                    <div style="margin-top: 0.75rem; font-size: 0.82rem; color: #34d399; font-weight: 700;">
+                        Outcome: Certified {{ path_data.capstone.target_role }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

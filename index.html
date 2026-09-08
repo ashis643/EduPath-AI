@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath AI — Intelligent Course Recommendation & Path Planning Platform</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #090d16 60%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+        .hero-card {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-lg);
+            padding: 3.5rem 2.5rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7), var(--glow-shadow);
+        }
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid var(--border-accent);
+            color: #a5b4fc;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
+        .feature-pills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+            text-align: left;
+        }
+        .feature-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+        .feature-item h4 {
+            color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+        }
+        .feature-item p {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+        .server-status-banner {
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: #34d399;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+        .launch-btn {
+            font-size: 1.1rem;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-card">
+        <div class="brand-badge">
+            <span>🎓</span> EduPath AI Platform
+        </div>
+
+        <h1 class="hero-title">Intelligent Course Recommendation & Academic Path Planner</h1>
+
+        <p class="hero-subtitle">
+            An advanced AI-powered guidance system featuring TF-IDF Cosine Similarity recommendations, skill-gap analysis, DAG prerequisite topological path planning, and Power BI analytics.
+        </p>
+
+        <div class="server-status-banner">
+            <span style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #10b981;"></span>
+            <span>Flask Application Server Active on <strong>http://127.0.0.1:5000</strong></span>
+        </div>
+
+        <div class="feature-pills">
+            <div class="feature-item">
+                <h4>✨ Multi-Factor Scoring</h4>
+                <p>Combines 40% Skill Gap + 30% Career Relevance + 15% Interest + 10% Difficulty + 5% Prerequisites.</p>
+            </div>
+            <div class="feature-item">
+                <h4>🗺️ Learning Roadmap</h4>
+                <p>Topological graph sorting ensuring prerequisites are completed before advanced steps.</p>
+            </div>
+            <div class="feature-item">
+                <h4>📊 Power BI Exporter</h4>
+                <p>Flat analytical dataset exporter generating real-time Power BI compatible CSV reports.</p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="http://127.0.0.1:5000" class="btn btn-primary launch-btn">
+                🚀 Launch Application (http://127.0.0.1:5000)
+            </a>
+            <a href="http://127.0.0.1:5000/login" class="btn btn-secondary launch-btn" style="background: rgba(255,255,255,0.08);">
+                🔑 Sign In Page
+            </a>
+        </div>
+
+        <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-dim);">
+            <strong>Quick Demo Credentials:</strong> Student: <code>alex.mercer@univ.edu</code> / <code>password123</code> • Admin: <code>admin@edupath.ai</code> / <code>admin123</code>
+        </div>
+    </div>
+
+    <script>
+        // Automatic redirect if server is reachable
+        fetch("http://127.0.0.1:5000/dashboard", { mode: 'no-cors' }).then(() => {
+            console.log("Flask server detected. Redirecting...");
+            window.location.href = "http://127.0.0.1:5000";
+        }).catch(err => {
+            console.log("Manual launch option ready.");
+        });
+    </script>
+</body>
+</html>

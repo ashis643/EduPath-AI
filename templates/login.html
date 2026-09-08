@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — EduPath AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        if (window.location.protocol === 'file:') {
+            window.location.href = 'http://127.0.0.1:5000';
+        }
+    </script>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #090d16 60%);
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🎓</div>
+            <h2 style="font-size: 1.6rem; font-weight: 800;">Welcome to EduPath AI</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Intelligent Academic Guidance & Recommendation System</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="alex.mercer@univ.edu" required value="alex.mercer@univ.edu">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required value="password123">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">Sign In to Dashboard</button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 0.8rem; color: var(--text-dim);">
+            <strong>Demo Quick Credentials:</strong><br>
+            • Student: <code>alex.mercer@univ.edu</code> / <code>password123</code><br>
+            • Admin: <code>admin@edupath.ai</code> / <code>admin123</code>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-muted);">
+            Don't have a student profile? <a href="{{ url_for('register') }}">Create Account</a>
+        </div>
+    </div>
+
+</body>
+</html>

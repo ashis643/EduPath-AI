@@ -1,0 +1,11 @@
+id,title,description,category
+1,Data Analyst,"Analyzes quantitative data, builds visual dashboards, and delivers actionable business metrics.",Data & Analytics
+2,Data Scientist,"Builds predictive machine learning models, statistical analyses, and data processing pipelines.",Data & Analytics
+3,Business Analyst,"Bridges business stakeholders and IT through requirements analysis, data insights, and storytelling.",Business & Strategy
+4,Software Developer,"Designs, develops, tests, and maintains software applications using robust programming principles.",Software Engineering
+5,Web Developer,"Builds responsive, high-performance web applications across frontend and backend technologies.",Software Engineering
+6,Cloud Engineer,"Architects, deploys, and manages scalable infrastructure in cloud environments like AWS.",Cloud & DevOps
+7,Database Administrator,"Ensures high availability, security, query optimization, and schema design for enterprise databases.",Databases & Infrastructure
+8,Machine Learning Engineer,"Designs scalable AI pipelines, train neural networks, and deploys production ML models.",Artificial Intelligence
+9,Cybersecurity Analyst,"Protects IT infrastructure, monitors network traffic, investigates breaches, and enforces security policies.",Cybersecurity
+10,UI/UX Designer,"Crafts intuitve user experiences, interactive wireframes, design systems, and visually engaging interfaces.",Design

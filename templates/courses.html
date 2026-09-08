@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block page_title %}Complete Course Catalog{% endblock %}
+
+{% block content %}
+
+<!-- Search & Multi-Filter Bar -->
+<div class="card" style="padding: 1.25rem;">
+    <form action="{{ url_for('courses') }}" method="GET" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+        <div style="flex: 2; min-width: 250px;">
+            <input type="text" name="q" class="form-control" placeholder="Search by course name, skill, code, or keyword..." value="{{ search_query }}">
+        </div>
+
+        <div style="flex: 1; min-width: 160px;">
+            <select name="category" class="form-select" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="flex: 1; min-width: 140px;">
+            <select name="difficulty" class="form-select" onchange="this.form.submit()">
+                <option value="">All Difficulties</option>
+                <option value="Beginner" {% if difficulty_filter == 'Beginner' %}selected{% endif %}>Beginner</option>
+                <option value="Intermediate" {% if difficulty_filter == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                <option value="Advanced" {% if difficulty_filter == 'Advanced' %}selected{% endif %}>Advanced</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.75rem 1.25rem;">Search</button>
+        {% if search_query or category_filter or difficulty_filter %}
+            <a href="{{ url_for('courses') }}" class="btn btn-secondary btn-sm" style="padding: 0.75rem 1rem;">Clear Filters</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Courses Count Summary -->
+<div style="margin-bottom: 1rem; font-size: 0.88rem; color: var(--text-muted);">
+    Showing <strong>{{ courses|length }}</strong> courses available in the system catalog.
+</div>
+
+<!-- Course Cards Grid -->
+<div class="course-grid">
+    {% for c in courses %}
+    <div class="course-card">
+        <div>
+            <div class="course-card-top">
+                <span class="course-category">{{ c.category }}</span>
+                <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">{{ c.course_code }}</span>
+            </div>
+
+            <h4 class="course-title">{{ c.name }}</h4>
+            <p class="course-desc">{{ c.description }}</p>
+
+            <div style="display: flex; gap: 1rem; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.75rem;">
+                <span>⏱️ {{ c.duration_weeks }} Wks</span>
+                <span>⌛ {{ c.estimated_hours }} Hrs</span>
+                <span>📊 {{ c.difficulty }}</span>
+            </div>
+
+            {% if c.skill_names %}
+            <div class="skills-pill-container">
+                {% for sk in c.skill_names.split(',')[:4] %}
+                    <span class="skill-pill">{{ sk.strip() }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; display: flex; gap: 0.5rem;">
+            <a href="{{ url_for('course_details', course_id=c.id) }}" class="btn btn-secondary btn-sm" style="flex: 1;">Course Info</a>
+            <button onclick="updateCourseStatus({{ c.id }}, 'in_progress', 10)" class="btn btn-primary btn-sm">Start Course</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

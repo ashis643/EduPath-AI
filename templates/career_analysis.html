@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block page_title %}Career Gap & Alignment Analysis{% endblock %}
+
+{% block content %}
+
+<!-- Header Goal Banner -->
+<div class="card" style="background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(17,24,39,1) 100%); border-color: var(--border-accent);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <span class="badge badge-next" style="margin-bottom: 0.5rem;">Target Career Goal</span>
+            <h2 style="font-size: 1.5rem; font-weight: 800;">{{ career_profile.title }}</h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">
+                {{ career_profile.description }}
+            </p>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 2.2rem; font-weight: 800; color: #10b981;">{{ gap_data.career_readiness_pct }}%</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Career Readiness Score</div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.75rem;">
+    <!-- Required Skill Weighting Table -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">⚡ Required Skill Breakdown & Importance Weights</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Skill Name</th>
+                            <th>Category</th>
+                            <th>Importance Weight</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sk in career_profile.required_skills %}
+                        <tr>
+                            <td><strong style="color: #fff;">{{ sk.name }}</strong></td>
+                            <td><span class="skill-pill">{{ sk.category }}</span></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <div class="progress-bar-container" style="width: 100px; margin: 0;">
+                                        <div class="progress-bar-fill" style="width: {{ (sk.weight / 5.0) * 100 }}%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.78rem; font-weight: 700;">{{ sk.weight }} / 5.0</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if sk.id in gap_data.completed_skills|map(attribute='id') %}
+                                    <span class="badge badge-completed">✓ Possessed</span>
+                                {% else %}
+                                    <span class="badge badge-locked">✗ Skill Gap</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Career Alignment Rankings -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🏆 Alternate Career Match Alignment</h3>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Comparison of your current skill profile against all tech career paths.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                {% for cm in all_matches %}
+                <div style="background: rgba(0,0,0,0.2); padding: 0.85rem 1rem; border-radius: 10px; border: 1px solid var(--border-color); {% if cm.id == gap_data.target_career_id %}border-color: var(--primary); background: rgba(99,102,241,0.1);{% endif %}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                        <strong style="color: #fff; font-size: 0.9rem;">
+                            {{ cm.title }}
+                            {% if cm.id == gap_data.target_career_id %}<span class="badge badge-next" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">Selected Goal</span>{% endif %}
+                        </strong>
+                        <span style="font-size: 0.88rem; font-weight: 800; color: #10b981;">{{ cm.readiness_pct }}%</span>
+                    </div>
+
+                    <div class="progress-bar-container" style="margin: 0.25rem 0 0.4rem 0; height: 6px;">
+                        <div class="progress-bar-fill {% if cm.readiness_pct > 70 %}success{% endif %}" style="width: {{ cm.readiness_pct }}%;"></div>
+                    </div>
+
+                    <div style="font-size: 0.72rem; color: var(--text-dim);">
+                        Acquired {{ cm.acquired_skills }} of {{ cm.total_skills }} required skills
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

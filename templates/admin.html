@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block page_title %}System Administration & Analytics Panel{% endblock %}
+
+{% block content %}
+
+<!-- Analytics KPI Cards -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Total Registered Students</span>
+            <span class="metric-icon">👥</span>
+        </div>
+        <div class="metric-value" style="color: #6366f1;">{{ total_students }}</div>
+        <div class="metric-sub">Active platform users</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Courses in Catalog</span>
+            <span class="metric-icon">📚</span>
+        </div>
+        <div class="metric-value" style="color: #10b981;">{{ total_courses }}</div>
+        <div class="metric-sub">Structured learning modules</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Most Popular Career Goal</span>
+            <span class="metric-icon">🎯</span>
+        </div>
+        <div class="metric-value" style="font-size: 1.3rem; color: #f59e0b;">{{ most_popular_career }}</div>
+        <div class="metric-sub">Highest student selection</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Top Recommended Course</span>
+            <span class="metric-icon">✨</span>
+        </div>
+        <div class="metric-value" style="font-size: 1.1rem; color: #06b6d4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ most_recommended_course }}</div>
+        <div class="metric-sub">Highest recommendation frequency</div>
+    </div>
+</div>
+
+<!-- Power BI Dataset Export Banner -->
+<div class="card" style="background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(17,24,39,1) 100%); border-color: rgba(245,158,11,0.4);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="font-size: 1.2rem; font-weight: 800; color: #fbbf24;">📊 Power BI Analytics Export Engine</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Generate and download a full, flattened CSV dataset containing student profiles, recommendations, skill gaps, completion rates, and career readiness metrics formatted for Power BI dashboards.
+            </p>
+        </div>
+        <a href="{{ url_for('export_powerbi_dataset') }}" class="btn btn-primary" style="background: var(--warning-gradient); color: #000; font-weight: 800;">
+            📥 Export Power BI Dataset (CSV)
+        </a>
+    </div>
+</div>
+
+<!-- Admin Management Sections -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.75rem;">
+    <!-- Left Column: Add & List Courses -->
+    <div>
+        <!-- Add New Course Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">➕ Add New Course to Catalog</h3>
+            </div>
+
+            <form action="{{ url_for('admin_add_course') }}" method="POST">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Course Code</label>
+                        <input type="text" name="course_code" class="form-control" placeholder="e.g. CS201" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Course Title</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Enterprise Cloud Architecture" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" class="form-control" placeholder="Cloud Computing" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Difficulty</label>
+                        <select name="difficulty" class="form-select">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (Wks)</label>
+                        <input type="number" name="duration_weeks" class="form-control" value="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hours</label>
+                        <input type="number" name="estimated_hours" class="form-control" value="30" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="Course overview and objectives..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Select Skills Covered</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; max-height: 120px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 6px;">
+                        {% for sk in skills %}
+                        <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem;">
+                            <input type="checkbox" name="skills" value="{{ sk.id }}"> {{ sk.name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">Save Course to Database</button>
+            </form>
+        </div>
+
+        <!-- Course Catalog Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">📚 Managed Course Database ({{ courses|length }})</h3>
+            </div>
+
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Difficulty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in courses %}
+                        <tr>
+                            <td><code>{{ c.course_code }}</code></td>
+                            <td><strong style="color: #fff;">{{ c.name }}</strong></td>
+                            <td><span class="course-category">{{ c.category }}</span></td>
+                            <td>{{ c.difficulty }}</td>
+                            <td>
+                                <form action="{{ url_for('admin_delete_course', course_id=c.id) }}" method="POST" onsubmit="return confirm('Remove course?');">
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="color: #ef4444; padding: 0.2rem 0.5rem;">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Skills, Roles & Students -->
+    <div>
+        <!-- Student Directory Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">👥 Registered Students</h3>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 300px; overflow-y: auto;">
+                {% for st in students %}
+                <div style="background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.84rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #fff;">{{ st.name }}</strong>
+                        <span style="color: var(--primary);">CGPA: {{ st.cgpa }}</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">
+                        {{ st.degree }} • Sem {{ st.semester }} • Goal: <strong>{{ st.target_career or 'Not Set' }}</strong>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Career Roles Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🎯 Career Roles Catalog</h3>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                {% for r in roles %}
+                <div style="font-size: 0.82rem; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px; display: flex; justify-content: space-between;">
+                    <strong style="color: #fff;">{{ r.title }}</strong>
+                    <span style="color: var(--text-dim);">{{ r.category }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

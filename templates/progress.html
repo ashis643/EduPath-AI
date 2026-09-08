@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block page_title %}My Course Progress & Skill Tracker{% endblock %}
+
+{% block content %}
+
+<!-- Header Stats Row -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Career Readiness Score</span>
+            <span class="metric-icon">📈</span>
+        </div>
+        <div class="metric-value" style="color: #6366f1;">{{ gap_data.career_readiness_pct }}%</div>
+        <div class="metric-sub">Target Role: {{ gap_data.target_career_title }}</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Completed Skills</span>
+            <span class="metric-icon">✓</span>
+        </div>
+        <div class="metric-value" style="color: #10b981;">{{ gap_data.completed_count }}</div>
+        <div class="metric-sub">Out of {{ gap_data.total_required_count }} required career skills</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Enrolled Courses</span>
+            <span class="metric-icon">📚</span>
+        </div>
+        <div class="metric-value" style="color: #06b6d4;">{{ enrolled_courses|length }}</div>
+        <div class="metric-sub">Active learning engagements</div>
+    </div>
+</div>
+
+<!-- Active Enrolled Courses Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📖 Enrolled Courses Progress Tracker</h3>
+        <a href="{{ url_for('courses') }}" class="btn btn-secondary btn-sm">Explore Catalog</a>
+    </div>
+
+    {% if enrolled_courses %}
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Course Code & Name</th>
+                    <th>Category</th>
+                    <th>Difficulty</th>
+                    <th>Status</th>
+                    <th style="min-width: 220px;">Progress %</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ec in enrolled_courses %}
+                <tr>
+                    <td>
+                        <strong style="color: #fff;">{{ ec.name }}</strong>
+                        <span style="font-size: 0.75rem; color: var(--text-dim); display: block;">{{ ec.course_code }} • {{ ec.duration_weeks }} Wks</span>
+                    </td>
+                    <td><span class="course-category">{{ ec.category }}</span></td>
+                    <td>{{ ec.difficulty }}</td>
+                    <td>
+                        <select id="status-{{ ec.course_id }}" class="form-select" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; width: 130px;">
+                            <option value="in_progress" {% if ec.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="completed" {% if ec.status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="saved" {% if ec.status == 'saved' %}selected{% endif %}>Saved</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="range" id="slider-{{ ec.course_id }}" min="0" max="100" value="{{ ec.progress_pct }}" 
+                                   oninput="document.getElementById('label-{{ ec.course_id }}').textContent = this.value + '%'"
+                                   style="flex: 1; accent-color: var(--primary);">
+                            <span id="label-{{ ec.course_id }}" style="font-size: 0.8rem; font-weight: 700; width: 45px;">{{ ec.progress_pct }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.35rem;">
+                            <button onclick="saveRowProgress({{ ec.course_id }})" class="btn btn-primary btn-sm" style="padding: 0.3rem 0.65rem;">Save</button>
+                            <a href="{{ url_for('course_details', course_id=ec.course_id) }}" class="btn btn-secondary btn-sm" style="padding: 0.3rem 0.65rem;">Details</a>
+                            <button onclick="updateCourseStatus({{ ec.course_id }}, 'remove')" class="btn btn-secondary btn-sm" style="color: #ef4444; padding: 0.3rem 0.5rem;" title="Remove course">&times;</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+        <div style="font-size: 3rem; margin-bottom: 0.5rem;">📚</div>
+        <h4 style="font-size: 1.1rem; color: #fff;">No active courses enrolled yet</h4>
+        <p style="font-size: 0.85rem; margin-bottom: 1.5rem;">Start recommended courses to track your academic progress.</p>
+        <a href="{{ url_for('recommendations') }}" class="btn btn-primary">View Recommended Courses</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function saveRowProgress(courseId) {
+    const statusSelect = document.getElementById(`status-${courseId}`);
+    const progressSlider = document.getElementById(`slider-${courseId}`);
+    if (!statusSelect || !progressSlider) return;
+
+    const newStatus = statusSelect.value;
+    const newProgress = parseInt(progressSlider.value, 10);
+
+    updateCourseStatus(courseId, newStatus, newProgress);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block page_title %}Edit Student Profile{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">👤 Academic Profile & Skill Configuration</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Updating your profile triggers dynamic recalculation of recommendations and your learning path.</p>
+        </div>
+
+        <form action="{{ url_for('profile') }}" method="POST">
+            <!-- Academic Info Section -->
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">1. Academic Information</h4>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label">Degree Program</label>
+                    <select name="degree" class="form-select">
+                        <option value="B.Tech CSE" {% if student.degree == 'B.Tech CSE' %}selected{% endif %}>B.Tech Computer Science & Engineering</option>
+                        <option value="B.S. Data Science" {% if student.degree == 'B.S. Data Science' %}selected{% endif %}>B.S. Data Science & Analytics</option>
+                        <option value="B.C.A. IT" {% if student.degree == 'B.C.A. IT' %}selected{% endif %}>B.C.A. Information Technology</option>
+                        <option value="M.Tech AI" {% if student.degree == 'M.Tech AI' %}selected{% endif %}>M.Tech Artificial Intelligence</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Branch / Specialization</label>
+                    <input type="text" name="branch" class="form-control" value="{{ student.branch }}" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <div class="form-group">
+                    <label class="form-label">Current Semester Level</label>
+                    <input type="number" name="semester" class="form-control" min="1" max="8" value="{{ student.semester }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Current CGPA / Percentage</label>
+                    <input type="number" name="cgpa" class="form-control" step="0.1" min="0" max="10" value="{{ student.cgpa }}" required>
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+            <!-- Target Career Role Section -->
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">2. Target Career Goal</h4>
+
+            <div class="form-group">
+                <label class="form-label">Select Target Career Role</label>
+                <select name="target_career_id" class="form-select" style="font-size: 1rem; padding: 0.85rem;">
+                    {% for role in all_career_roles %}
+                        <option value="{{ role.id }}" {% if student.target_career_id == role.id %}selected{% endif %}>
+                            {{ role.title }} ({{ role.category }}) — {{ role.description[:60] }}...
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+            <!-- Current Skills Section -->
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">3. Select Current Skills You Possess</h4>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                {% for sk in all_skills %}
+                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; color: var(--text-muted);">
+                    <input type="checkbox" name="skills" value="{{ sk.id }}" {% if sk.id in student_skill_ids %}checked{% endif %} style="accent-color: var(--primary);">
+                    <span>{{ sk.name }}</span>
+                    <span style="font-size: 0.7rem; color: var(--text-dim);">({{ sk.category }})</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+            <!-- Areas of Interest Section -->
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">4. Select Areas of Interest</h4>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem;">
+                {% for int_name in predefined_interests %}
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(255,255,255,0.05); padding: 0.4rem 0.8rem; border-radius: 50px; font-size: 0.84rem; cursor: pointer; border: 1px solid var(--border-color);">
+                    <input type="checkbox" name="interests" value="{{ int_name }}" {% if int_name in student_interests %}checked{% endif %} style="accent-color: var(--primary);">
+                    <span>{{ int_name }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1rem;">Save Profile & Recalculate Recommendations</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

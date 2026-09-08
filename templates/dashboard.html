@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block page_title %}Student Academic Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Top Metric Cards Row -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Career Readiness</span>
+            <span class="metric-icon">🎯</span>
+        </div>
+        <div class="metric-value" style="color: #6366f1;">{{ gap_data.career_readiness_pct }}%</div>
+        <div class="metric-sub">Aligned with <strong>{{ gap_data.target_career_title }}</strong></div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Skills Completed</span>
+            <span class="metric-icon">✅</span>
+        </div>
+        <div class="metric-value" style="color: #10b981;">{{ gap_data.completed_count }}</div>
+        <div class="metric-sub">Out of {{ gap_data.total_required_count }} required skills</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Skills Missing</span>
+            <span class="metric-icon">⚠️</span>
+        </div>
+        <div class="metric-value" style="color: #f59e0b;">{{ gap_data.missing_count }}</div>
+        <div class="metric-sub">Skill gap: {{ gap_data.skill_gap_pct }}%</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-header">
+            <span class="metric-title">Courses Completed</span>
+            <span class="metric-icon">🎓</span>
+        </div>
+        <div class="metric-value" style="color: #06b6d4;">{{ metrics.completed_count }}</div>
+        <div class="metric-sub">{{ metrics.in_progress_count }} courses in progress</div>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.75rem;">
+    <!-- Left Column: Recommendations & Path -->
+    <div>
+        <!-- Top Recommended Courses Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">✨ Top Personalized Course Recommendations</h3>
+                <a href="{{ url_for('recommendations') }}" class="btn btn-secondary btn-sm">View All</a>
+            </div>
+
+            <div class="course-grid">
+                {% for rec in recommendations %}
+                <div class="course-card">
+                    <div>
+                        <div class="course-card-top">
+                            <span class="course-category">{{ rec.category }}</span>
+                            <span class="match-score-badge">{{ rec.match_score }}% Match</span>
+                        </div>
+                        <h4 class="course-title">{{ rec.name }}</h4>
+                        <p class="course-desc">{{ rec.description }}</p>
+
+                        <div class="skills-pill-container">
+                            {% for sk in rec.skills[:4] %}
+                                <span class="skill-pill">{{ sk }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.78rem; color: var(--text-dim);">⏱️ {{ rec.duration_weeks }} Wks • {{ rec.difficulty }}</span>
+                        <a href="{{ url_for('course_details', course_id=rec.course_id) }}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Academic Path Preview Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🗺️ Academic Path Roadmap for {{ path_data.target_career_title }}</h3>
+                <a href="{{ url_for('academic_path') }}" class="btn btn-secondary btn-sm">Full Interactive Roadmap</a>
+            </div>
+
+            <div class="path-timeline">
+                {% for node in path_data.nodes[:4] %}
+                <div class="timeline-step {{ node.step_status }}">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <span class="badge {{ node.badge_class }}">{{ node.status_label }}</span>
+                            <h4 style="font-size: 1rem; font-weight: 700; margin-top: 0.35rem;">Step {{ node.step_number }}: {{ node.name }}</h4>
+                            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">{{ node.description }}</p>
+                        </div>
+                        <a href="{{ url_for('course_details', course_id=node.course_id) }}" class="btn btn-secondary btn-sm">Course</a>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="timeline-step" style="border-style: dashed; border-color: var(--primary);">
+                    <span class="badge badge-next">🏁 Final Milestone</span>
+                    <h4 style="font-size: 1rem; font-weight: 700; margin-top: 0.35rem;">{{ path_data.capstone.title }}</h4>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">{{ path_data.capstone.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Career Readiness & Skill Breakdown -->
+    <div>
+        <!-- Career Goal & Gauge Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🎯 Target Career Readiness</h3>
+            </div>
+
+            <div style="text-align: center; position: relative; height: 180px; margin-bottom: 1rem;">
+                <canvas id="readinessGauge"></canvas>
+                <div style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #fff;">{{ gap_data.career_readiness_pct }}%</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">Readiness</div>
+                </div>
+            </div>
+
+            <p style="font-size: 0.84rem; color: var(--text-muted); text-align: center; background: rgba(99,102,241,0.08); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-accent);">
+                Your profile is <strong>{{ gap_data.career_readiness_pct }}% aligned</strong> with the <strong>{{ gap_data.target_career_title }}</strong> career path.
+            </p>
+        </div>
+
+        <!-- Skill Gap & Progress Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">⚡ Skill Gap Analysis</h3>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem;">Completed Skills ({{ gap_data.completed_count }})</h4>
+                <div class="skills-pill-container">
+                    {% for sk in gap_data.completed_skills %}
+                        <span class="skill-pill" style="background: rgba(16,185,129,0.15); color: #34d399; border-color: rgba(16,185,129,0.3);">✓ {{ sk.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem;">Missing Skills ({{ gap_data.missing_count }})</h4>
+                <div class="skills-pill-container">
+                    {% for sk in gap_data.missing_skills %}
+                        <span class="skill-pill" style="background: rgba(245,158,11,0.15); color: #fbbf24; border-color: rgba(245,158,11,0.3);">✗ {{ sk.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.75rem;">Required Skill Progress</h4>
+            <div style="height: 200px; position: relative;">
+                <canvas id="skillChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const readinessPct = {{ gap_data.career_readiness_pct }};
+        const skillProgressData = {{ gap_data.skill_progress | tojson }};
+        initDashboardCharts(readinessPct, skillProgressData);
+    });
+</script>
+{% endblock %}
