@@ -763,6 +763,26 @@ def export_powerbi_dataset():
         download_name="EduPath_PowerBI_Analytics_Dataset.csv"
     )
 
+@app.errorhandler(500)
+@app.errorhandler(Exception)
+def handle_internal_error(error):
+    import traceback
+    err_trace = traceback.format_exc()
+    print(f"500 Internal Error Caught:\n{err_trace}")
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head><title>System Diagnostics — EduPath AI</title></head>
+    <body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem;">
+        <h2 style="color: #ef4444;">⚠️ EduPath AI — Application Error Detected</h2>
+        <p>An unexpected error occurred during execution:</p>
+        <pre style="background: #1e293b; padding: 1rem; border-radius: 8px; color: #fca5a5; overflow-x: auto;">{err_trace or str(error)}</pre>
+        <br>
+        <a href="/" style="color: #818cf8; text-decoration: underline;">Return to Home</a>
+    </body>
+    </html>
+    """, 500
+
 if __name__ == "__main__":
     ensure_db_initialized()
     port = int(os.environ.get("PORT", 5000))

@@ -109,14 +109,25 @@ def generate_recommendations(student_id, conn):
         course_corpuses.append(ccorpus)
         course_list_clean.append(c)
 
-    # Compute Cosine Similarity matrix
-    tfidf = TfidfVectorizer(stop_words='english')
-    if course_corpuses:
-        all_texts = [student_corpus] + course_corpuses
-        tfidf_matrix = tfidf.fit_transform(all_texts)
-        cosine_sims = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
-    else:
-        cosine_sims = np.zeros(len(courses))
+    # Compute Cosine Similarity matrix (with fail-safe fallback)
+    try:
+        tfidf = TfidfVectorizer(stop_words='english')
+        if course_corpuses:
+            all_texts = [student_corpus] + course_corpuses
+            tfidf_matrix = tfidf.fit_transform(all_texts)
+            cosine_sims = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
+        else:
+            cosine_sims = np.zeros(len(courses))
+    except Exception as e:
+        print(f"Warning: TF-IDF calculation fallback triggered: {e}")
+        student_words = set(student_corpus.lower().split())
+        cosine_sims = []
+        for ccorpus in course_corpuses:
+            cwords = set(ccorpus.lower().split())
+            overlap = len(student_words & cwords)
+            sim = overlap / max(len(student_words | cwords), 1)
+            cosine_sims.append(sim)
+        cosine_sims = np.array(cosine_sims) if 'np' in globals() else cosine_sims
 
     recommendations = []
 
