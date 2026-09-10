@@ -27,21 +27,35 @@ else:
     DB_PATH = os.path.join(BASE_DIR, "database", "database.db")
     EXPORTS_DIR = os.path.join(BASE_DIR, "exports")
 
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-os.makedirs(EXPORTS_DIR, exist_ok=True)
+try:
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    os.makedirs(EXPORTS_DIR, exist_ok=True)
+except Exception as e:
+    print(f"Warning: Could not create directories: {e}")
 
 def ensure_db_initialized():
     """Auto-initialize database tables and seed data if DB is empty or missing."""
     try:
+        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+
+        # Copy pre-bundled database if target DB does not exist or is empty
+        if not os.path.exists(DB_PATH) or os.path.getsize(DB_PATH) == 0:
+            bundled_db = os.path.join(BASE_DIR, "database", "database.db")
+            if os.path.exists(bundled_db) and os.path.abspath(bundled_db) != os.path.abspath(DB_PATH):
+                import shutil
+                shutil.copyfile(bundled_db, DB_PATH)
+                print(f"Successfully copied bundled database to {DB_PATH}")
+
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='students';")
         table_exists = cursor.fetchone()
         conn.close()
+
         if not table_exists:
             print(f"Database table missing at {DB_PATH}. Auto-seeding database...")
             from database.seed_data import seed_database
-            seed_database()
+            seed_database(DB_PATH)
     except Exception as e:
         print(f"Database initialization check warning: {e}")
 

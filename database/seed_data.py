@@ -10,12 +10,23 @@ SCHEMA_PATH = os.path.join(DB_DIR, "schema.sql")
 DATA_DIR = os.path.join(PROJECT_DIR, "data")
 EXPORTS_DIR = os.path.join(PROJECT_DIR, "exports")
 
-os.makedirs(DATA_DIR, exist_ok=True)
-os.makedirs(EXPORTS_DIR, exist_ok=True)
+try:
+    os.makedirs(DATA_DIR, exist_ok=True)
+    os.makedirs(EXPORTS_DIR, exist_ok=True)
+except Exception:
+    pass
 
-def seed_database():
-    print(f"Connecting to database at {DB_PATH}...")
-    conn = sqlite3.connect(DB_PATH)
+def seed_database(target_db_path=None):
+    db_file = target_db_path
+    if not db_file:
+        if os.environ.get("VERCEL"):
+            db_file = os.path.join("/tmp", "database.db")
+        else:
+            db_file = DB_PATH
+
+    os.makedirs(os.path.dirname(db_file), exist_ok=True)
+    print(f"Connecting to database at {db_file}...")
+    conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
     # Read and execute schema
@@ -334,19 +345,32 @@ def seed_database():
     conn.close()
     print("Database seeding completed successfully!")
 
-    export_static_csvs()
+    export_static_csvs(db_file)
 
-def export_static_csvs():
-    conn = sqlite3.connect(DB_PATH)
-    courses_df = pd.read_sql_query("SELECT * FROM courses", conn)
-    skills_df = pd.read_sql_query("SELECT * FROM skills", conn)
-    roles_df = pd.read_sql_query("SELECT * FROM career_roles", conn)
-    conn.close()
+def export_static_csvs(target_db_path=None):
+    try:
+        db_file = target_db_path
+        if not db_file:
+            if os.environ.get("VERCEL"):
+                db_file = os.path.join("/tmp", "database.db")
+            else:
+                db_file = DB_PATH
 
-    courses_df.to_csv(os.path.join(DATA_DIR, "courses.csv"), index=False)
-    skills_df.to_csv(os.path.join(DATA_DIR, "skills.csv"), index=False)
-    roles_df.to_csv(os.path.join(DATA_DIR, "career_roles.csv"), index=False)
-    print("CSV files exported to data/ directory.")
+        conn = sqlite3.connect(db_file)
+        courses_df = pd.read_sql_query("SELECT * FROM courses", conn)
+        skills_df = pd.read_sql_query("SELECT * FROM skills", conn)
+        roles_df = pd.read_sql_query("SELECT * FROM career_roles", conn)
+        conn.close()
+
+        target_data_dir = os.path.join("/tmp", "data") if os.environ.get("VERCEL") else DATA_DIR
+        os.makedirs(target_data_dir, exist_ok=True)
+
+        courses_df.to_csv(os.path.join(target_data_dir, "courses.csv"), index=False)
+        skills_df.to_csv(os.path.join(target_data_dir, "skills.csv"), index=False)
+        roles_df.to_csv(os.path.join(target_data_dir, "career_roles.csv"), index=False)
+        print("CSV files exported successfully.")
+    except Exception as e:
+        print(f"CSV export warning (non-fatal): {e}")
 
 if __name__ == "__main__":
     seed_database()
