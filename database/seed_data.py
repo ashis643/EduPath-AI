@@ -2,6 +2,7 @@ import os
 import sqlite3
 import pandas as pd
 import json
+from werkzeug.security import generate_password_hash
 
 DB_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(DB_DIR)
@@ -309,10 +310,11 @@ def seed_database(target_db_path=None):
     # 5. Seed Sample Students
     da_role_id = role_map.get("Data Analyst")
     ds_role_id = role_map.get("Data Scientist")
+    default_pwd_hash = generate_password_hash("password123")
 
     students = [
-        ("Alex Mercer", "alex.mercer@univ.edu", "pbkdf2:sha256:dummyhash", "B.Tech CSE", "Computer Science", 5, 8.4, da_role_id),
-        ("Sarah Jenkins", "sarah.j@univ.edu", "pbkdf2:sha256:dummyhash", "B.S. Data Science", "Information Technology", 6, 9.1, ds_role_id)
+        ("Alex Mercer", "alex.mercer@univ.edu", default_pwd_hash, "B.Tech CSE", "Computer Science", 5, 8.4, da_role_id),
+        ("Sarah Jenkins", "sarah.j@univ.edu", default_pwd_hash, "B.S. Data Science", "Information Technology", 6, 9.1, ds_role_id)
     ]
 
     cursor.executemany(

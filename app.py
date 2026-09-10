@@ -114,11 +114,22 @@ def login():
         conn.close()
 
         if student:
-            # Check password (allow sample password or hash)
-            if student["password_hash"].startswith("pbkdf2:") and not check_password_hash(student["password_hash"], password):
-                if password != "password123": # Fallback sample password
-                    flash("Invalid email or password.", "danger")
-                    return render_template("login.html")
+            # Check password safely (support hashed passwords & fallback sample credentials)
+            pwd_hash = student["password_hash"] or ""
+            is_valid = False
+
+            try:
+                if pwd_hash.startswith("pbkdf2:") or pwd_hash.startswith("scrypt:"):
+                    is_valid = check_password_hash(pwd_hash, password)
+            except Exception:
+                is_valid = False
+
+            if not is_valid and password == "password123":
+                is_valid = True
+
+            if not is_valid:
+                flash("Invalid email or password.", "danger")
+                return render_template("login.html")
 
             session["user_id"] = student["id"]
             session["is_admin"] = False
